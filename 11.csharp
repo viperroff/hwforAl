@@ -1,0 +1,175 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Student[] students = new Student[20];
+        int studentCount = 0;
+
+        while (true)
+        {
+            Console.WriteLine("Меню:");
+            Console.WriteLine("1. Начальное формирование массива студентов");
+            Console.WriteLine("2. Добавить студента в массив");
+            Console.WriteLine("3. Вывести весь массив студентов");
+            Console.WriteLine("4. Найти студентов по году рождения");
+            Console.WriteLine("5. Удалить студента по фамилии");
+            Console.WriteLine("0. Выход");
+            Console.Write("Выберите действие: ");
+            int choice = int.Parse(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    // Initialize with predefined students
+                    studentCount = 5; // Setting an initial count
+                    students[0] = new Student("Иванов Иван", 15, 5, 2000);
+                    students[1] = new Student("Петров Петр", 20, 8, 1999);
+                    students[2] = new Student("Сидоров Сидор", 10, 12, 1998);
+                    students[3] = new Student("Алексеев Алексей", 1, 1, 2001);
+                    students[4] = new Student("Михайлов Михаил", 25, 3, 1997);
+
+                    Console.WriteLine("Студенты успешно добавлены!");
+                    break;
+
+                case 2:
+                    if (studentCount < 20)
+                    {
+                        students[studentCount] = new Student();
+                        students[studentCount].Input();
+                        studentCount++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Массив студентов полный.");
+                    }
+                    break;
+
+                case 3:
+                    for (int i = 0; i < studentCount; i++)
+                    {
+                        students[i].Display();
+                    }
+                    break;
+
+                case 4:
+                    Console.Write("Введите год рождения для поиска: ");
+                    int yearToFind = int.Parse(Console.ReadLine());
+                    Student[] foundStudents = Student.FindStudentsByBirthYear(students, yearToFind);
+                    Console.WriteLine("Найденные студенты:");
+                    foreach (Student student in foundStudents)
+                    {
+                        student.Display();
+                    }
+                    break;
+
+                case 5:
+                    Console.Write("Введите фамилию студента для удаления: ");
+                    string lastNameToDelete = Console.ReadLine();
+                    for (int i = 0; i < studentCount; i++)
+                    {
+                        if (students[i].FullName.StartsWith(lastNameToDelete))
+                        {
+                            for (int j = i; j < studentCount - 1; j++)
+                            {
+                                students[j] = students[j + 1];
+                            }
+                            students[--studentCount] = null;
+                            Console.WriteLine("Студент удален.");
+                            break;
+                        }
+                    }
+                    break;
+
+                case 0:
+                    return;
+
+                default:
+                    Console.WriteLine("Неверный выбор.");
+                    break;
+            }
+        }
+    }
+}
+
+public class Student
+{
+    private string fullName;
+    private int birthDay;
+    private int birthMonth;
+    private int birthYear;
+
+    public Student()
+    {
+        fullName = "Unknown";
+        birthDay = 1;
+        birthMonth = 1;
+        birthYear = 2000;
+    }
+
+    public Student(string fullName, int day, int month, int year)
+    {
+        this.fullName = fullName;
+        this.birthDay = day;
+        this.birthMonth = month;
+        this.birthYear = year;
+    }
+
+    public string FullName
+    {
+        get { return fullName; }
+        set { fullName = value; }
+    }
+
+    public int BirthYear
+    {
+        get { return birthYear; }
+        set { birthYear = value; }
+    }
+
+    public void Input()
+    {
+        Console.Write("Введите полное имя студента: ");
+        fullName = Console.ReadLine();
+        
+        try
+        {
+            Console.Write("Введите день рождения: ");
+            birthDay = int.Parse(Console.ReadLine());
+
+            Console.Write("Введите месяц рождения: ");
+            birthMonth = int.Parse(Console.ReadLine());
+
+            Console.Write("Введите год рождения: ");
+            birthYear = int.Parse(Console.ReadLine());
+
+            if (birthDay < 1 || birthDay > 31)
+                throw new ArgumentException("День не может быть меньше 1 и больше 31");
+            if (birthMonth < 1 || birthMonth > 12)
+                throw new ArgumentException("Месяц не может быть меньше 1 и больше 12");
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine("Ошибка: Ввод должен быть числом.");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+        }
+    }
+
+    public void Display()
+    {
+        Console.WriteLine($"Студент: {fullName}, Дата рождения: {birthDay}/{birthMonth}/{birthYear}");
+    }
+
+    public static Student[] FindStudentsByBirthYear(Student[] students, int year)
+    {
+        return Array.FindAll(students, s => s.BirthYear == year && s != null);
+    }
+}
