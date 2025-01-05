@@ -1,0 +1,138 @@
+using System;
+
+public struct CPoint
+{
+    public double X { get; }
+    public double Y { get; }
+
+    public CPoint(double x, double y)
+    {
+        X = x;
+        Y = y;
+    }
+}
+
+public class CTetragon
+{
+    protected CPoint[] vertices;
+
+    public CTetragon()
+    {
+        vertices = new CPoint[4];
+    }
+
+    public CTetragon(CPoint p1, CPoint p2, CPoint p3, CPoint p4)
+    {
+        vertices = new CPoint[] { p1, p2, p3, p4 };
+        Validate();
+    }
+
+    protected virtual void Validate()
+    {
+        if (!IsValidTetragon())
+        {
+            throw new ArgumentException("Указанные точки не образуют четырехугольник.");
+        }
+    }
+
+    private bool IsValidTetragon()
+    {
+        return (vertices[0].X != vertices[1].X || vertices[0].Y != vertices[1].Y) &&
+               (vertices[1].X != vertices[2].X || vertices[1].Y != vertices[2].Y) &&
+               (vertices[2].X != vertices[3].X || vertices[2].Y != vertices[3].Y) &&
+               (vertices[3].X != vertices[0].X || vertices[3].Y != vertices[0].Y);
+    }
+
+    public virtual double Area()
+    {
+        return Math.Abs((vertices[0].X * vertices[1].Y + vertices[1].X * vertices[2].Y +
+                         vertices[2].X * vertices[3].Y + vertices[3].X * vertices[0].Y) -
+                        (vertices[1].X * vertices[0].Y + vertices[2].X * vertices[1].Y +
+                         vertices[3].X * vertices[2].Y + vertices[0].X * vertices[3].Y)) / 2;
+    }
+
+    public virtual double Perimeter()
+    {
+        double perimeter = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            double dx = vertices[(i + 1) % 4].X - vertices[i].X;
+            double dy = vertices[(i + 1) % 4].Y - vertices[i].Y;
+            perimeter += Math.Sqrt(dx * dx + dy * dy);
+        }
+        return perimeter;
+    }
+
+    public static bool operator <(CTetragon a, CTetragon b)
+    {
+        return a.Area() < b.Area();
+    }
+
+    public static bool operator >(CTetragon a, CTetragon b)
+    {
+        return a.Area() > b.Area();
+    }
+
+    public void Move(double deltaX, double deltaY)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            vertices[i] = new CPoint(vertices[i].X + deltaX, vertices[i].Y + deltaY);
+        }
+    }
+}
+
+public class CParallelogram : CTetragon
+{
+    public CParallelogram(CPoint p1, CPoint p2, CPoint p3, CPoint p4) : base(p1, p2, p3, p4)
+    {
+        Validate();
+    }
+
+    protected override void Validate()
+    {
+        base.Validate();
+
+        if (!IsValidParallelogram())
+        {
+            throw new ArgumentException("Указанные точки не образуют параллелограмм.");
+        }
+    }
+
+    private bool IsValidParallelogram()
+    {
+        return Math.Abs((vertices[0].X - vertices[1].X) * (vertices[2].Y - vertices[3].Y) -
+                         (vertices[0].Y - vertices[1].Y) * (vertices[2].X - vertices[3].X)) < 1e-9 &&
+               Math.Abs((vertices[1].X - vertices[2].X) * (vertices[3].Y - vertices[0].Y) -
+                         (vertices[1].Y - vertices[2].Y) * (vertices[3].X - vertices[0].X)) < 1e-9;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        try
+        {
+            CPoint p1 = new CPoint(0, 0);
+            CPoint p2 = new CPoint(4, 0);
+            CPoint p3 = new CPoint(5, 3);
+            CPoint p4 = new CPoint(1, 3);
+
+            CTetragon tetragon = new CTetragon(p1, p2, p3, p4);
+                        Console.WriteLine($"Площадь четырехугольника: {tetragon.Area()}");
+            Console.WriteLine($"Периметр четырехугольника: {tetragon.Perimeter()}");
+
+            CParallelogram parallelogram = new CParallelogram(p1, p2, new CPoint(5, 0), new CPoint(4, 3));
+            Console.WriteLine($"Площадь параллелограмма: {parallelogram.Area()}");
+            Console.WriteLine($"Периметр параллелограмма: {parallelogram.Perimeter()}");
+            parallelogram.Move(1, 1);
+            Console.WriteLine($"Площадь после перемещения: {parallelogram.Area()}");
+            Console.WriteLine($"Параллелограмм меньше четырехугольника? {parallelogram < tetragon}");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}
