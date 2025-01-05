@@ -1,0 +1,26 @@
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string inputText = "bak barber baab baalam prise batman ball bapple rose";
+        
+        string searchWord = "ba";
+        
+        PrintWordsStartingWith(inputText, searchWord);
+    }
+
+    static void PrintWordsStartingWith(string text, string prefix)
+    {
+        string[] words = text.Split(' ');
+        Console.WriteLine("Слова, начинающиеся с: " + prefix);
+        foreach (string word in words)
+        {
+            if (word.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine(word);
+            }
+        }
+    }
+}
