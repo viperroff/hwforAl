@@ -1,0 +1,95 @@
+using System;  
+using System.Collections.Generic;  
+using System.IO;  
+using System.Linq;  
+  
+public class STUDENT  
+{  
+    public string FIO { get; set; }  
+    public int BirthYear { get; set; }  
+    public string GroupNumber { get; set; }  
+  
+    public STUDENT(string fio, int birthYear, string groupNumber)  
+    {  
+        FIO = fio;  
+        BirthYear = birthYear;  
+        GroupNumber = groupNumber;  
+    }  
+  
+    public static int operator -(STUDENT a, STUDENT b)  
+    {  
+        return Math.Abs(a.BirthYear - b.BirthYear);  
+    }  
+  
+    public static void RemoveStudent(List<STUDENT> students, string fio)  
+    {  
+        var studentToRemove = students.FirstOrDefault(s => s.FIO == fio);  
+        if (studentToRemove != null)  
+            students.Remove(studentToRemove);  
+    }  
+  
+    public static List<STUDENT> FindStudentsByGroup(List<STUDENT> students, string groupNumber)  
+    {  
+        return students.Where(s => s.GroupNumber == groupNumber).ToList();  
+    }  
+  
+    public static List<STUDENT> LoadFromFile(string filePath)  
+    {  
+        var students = new List<STUDENT>();  
+        foreach (var line in File.ReadLines(filePath))  
+        {  
+            var parts = line.Split(',');  
+            students.Add(new STUDENT(parts[0], int.Parse(parts[1]), parts[2]));  
+        }  
+        return students;  
+    }  
+  
+    public static void SaveToFile(string filePath, List<STUDENT> students)  
+    {  
+        using (var writer = new StreamWriter(filePath))  
+        {  
+            foreach (var student in students)  
+            {  
+                writer.WriteLine($"{student.FIO},{student.BirthYear},{student.GroupNumber}");  
+            }  
+        }  
+    }  
+}  
+  
+public class Program  
+{  
+    public static void Main()  
+    {  
+        string filePath = "students.txt";  
+         
+        List<STUDENT> students = new List<STUDENT>()  
+        {  
+            new STUDENT("Иванов Иван", 2000, "A1"),  
+            new STUDENT("Петров Петр", 2001, "A1"),  
+            new STUDENT("Сидоров Сидор", 1999, "B1")  
+        };  
+ 
+        STUDENT.SaveToFile(filePath, students);  
+        Console.WriteLine("Студенты сохранены.");  
+ 
+        List<STUDENT> loadedStudents = STUDENT.LoadFromFile(filePath); 
+        Console.WriteLine("Студенты загружены из файла:"); 
+        foreach (var student in loadedStudents) 
+        { 
+            Console.WriteLine($"{student.FIO}, Год рождения: {student.BirthYear}, Номер группы: {student.GroupNumber}"); 
+        } 
+ 
+        var ageDiff = loadedStudents[0] - loadedStudents[1];  
+        Console.WriteLine($"Разница в возрасте между {loadedStudents[0].FIO} и {loadedStudents[1].FIO}: {ageDiff} год(а)");  
+ 
+        STUDENT.RemoveStudent(loadedStudents, "Петров Петр");  
+        Console.WriteLine("Студент 'Петров Петр' удален.");  
+ 
+        var groupStudents = STUDENT.FindStudentsByGroup(loadedStudents, "A1");  
+        Console.WriteLine("Студенты в группе A1:");  
+        foreach (var student in groupStudents)  
+        {  
+            Console.WriteLine(student.FIO);  
+        }  
+    }  
+}
