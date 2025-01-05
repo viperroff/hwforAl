@@ -1,0 +1,18 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        char Char = 'A'; 
+        int asciiCode = (int)Char;
+        
+        char previousChar = (char)(asciiCode - 1);
+        char nextChar = (char)(asciiCode + 1);
+        
+        Console.WriteLine($"Символ: " + Char);
+        Console.WriteLine($"ASCII-код: " + asciiCode);
+        Console.WriteLine($"Предыдущий символ: " + previousChar);
+        Console.WriteLine($"Следующий символ: " + nextChar);
+    }
+}
