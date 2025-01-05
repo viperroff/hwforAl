@@ -1,0 +1,90 @@
+using System; 
+ 
+namespace assignment8 
+{ 
+    class Program 
+    { 
+        static void Main(string[] args) 
+        { 
+            int[][] stepwiseArray = GenerateStepwiseArray(5, 10); 
+ 
+            Console.WriteLine("Сформированный ступенчатый массив:"); 
+            PrintStepwiseArray(stepwiseArray); 
+ 
+            Console.Write("Введите число для поиска: "); 
+            int numberToSearch = int.Parse(Console.ReadLine()); 
+ 
+            try 
+            { 
+                int[] positions = FindPositions(stepwiseArray, numberToSearch); 
+ 
+                Console.Write("Позиции элементов, равных " + numberToSearch + ": "); 
+                foreach (int position in positions) 
+                { 
+                    Console.Write(position + " "); 
+                } 
+                Console.WriteLine(); 
+            } 
+            catch (ArgumentNullException e) 
+            { 
+                Console.WriteLine("Ошибка: " + e.Message); 
+            } 
+ 
+            Console.ReadLine(); 
+        } 
+ 
+        static int[][] GenerateStepwiseArray(int rows, int maxColumns) 
+        { 
+            Random rand = new Random(); 
+            int[][] array = new int[rows][]; 
+ 
+            for (int i = 0; i < rows; i++) 
+            { 
+                int columns = rand.Next(1, maxColumns + 1); 
+                array[i] = new int[columns]; 
+ 
+                for (int j = 0; j < columns; j++) 
+                { 
+                    array[i][j] = rand.Next(100); 
+                } 
+            } 
+ 
+            return array; 
+        } 
+ 
+        static void PrintStepwiseArray(int[][] array) 
+        { 
+            foreach (int[] row in array) 
+            { 
+                foreach (int element in row) 
+                { 
+                    Console.Write(element + " "); 
+                } 
+                Console.WriteLine(); 
+            } 
+        } 
+ 
+        static int[] FindPositions(int[][] array, int number) 
+        { 
+            if (array == null) 
+            { 
+                throw new ArgumentNullException("Массив не должен быть null!"); 
+            } 
+ 
+            var positions = new System.Collections.Generic.List<int>(); 
+ 
+            for (int i = 0; i < array.Length; i++) 
+            { 
+                for (int j = 0; j < array[i].Length; j++) 
+                { 
+                    if (array[i][j] == number) 
+                    { 
+                        positions.Add(i * array[i].Length + j); 
+                    } 
+                } 
+            } 
+ 
+            return positions.ToArray(); 
+        } 
+    } 
+}
