@@ -1,0 +1,132 @@
+using System;
+
+class Student
+{
+    public string FullName { get; set; }
+    public int BirthYear { get; set; }
+    public string GroupNumber { get; set; }
+
+    // Список доступных групп
+    private static readonly string[] AvailableGroups = { "101", "102", "201", "202", "301" };
+
+    public Student(string fullName, int birthYear, string groupNumber)
+    {
+        FullName = fullName;
+        BirthYear = birthYear;
+
+        // Проверяем, что группа из фиксированного списка
+        if (Array.Exists(AvailableGroups, group => group == groupNumber))
+        {
+            GroupNumber = groupNumber;
+        }
+        else
+        {
+            throw new ArgumentException("Неверный номер группы.");
+        }
+    }
+
+    // Операция вычисления разницы в возрасте
+    public static int operator -(Student a, Student b)
+    {
+        return (DateTime.Now.Year - a.BirthYear) - (DateTime.Now.Year - b.BirthYear);
+    }
+
+    // Статический метод для удаления студента по ФИО
+    public static Student[] RemoveStudentByFullName(Student[] students, string fullName)
+    {
+        return Array.FindAll(students, student => student.FullName != fullName);
+    }
+
+    public override string ToString()
+    {
+        return $"{FullName}, Год рождения: {BirthYear}, Номер группы: {GroupNumber}";
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Инициализация фиксированного списка студентов
+        Student[] students = new Student[]
+        {
+            new Student("Иванов Иван Иванович", 2000, "101"),
+            new Student("Петров Петр Петрович", 1999, "102"),
+            new Student("Сидорова Анна Сергеевна", 2001, "201"),
+            new Student("Кузнецова Мария Викторовна", 2000, "202"),
+            new Student("Смирнов Алексей Андреевич", 2002, "301")
+        };
+
+        int count = students.Length;
+        bool running = true;
+
+        while (running)
+        {
+            Console.WriteLine("\nМеню:");
+            Console.WriteLine("1. Вывод массива студентов");
+            Console.WriteLine("2. Вычисление разницы в возрасте двух студентов");
+            Console.WriteLine("3. Удаление студента по ФИО");
+            Console.WriteLine("4. Поиск студентов по номеру группы");
+            Console.WriteLine("0. Выход");
+            Console.Write("Выберите действие: ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    for (int i = 0; i < count; i++)
+                    {
+                        Console.WriteLine(students[i]);
+                    }
+                    break;
+
+                case "2":
+                    Console.Write("Введите ФИО первого студента: ");
+                    string firstFullName = Console.ReadLine();
+                    Console.Write("Введите ФИО второго студента: ");
+                    string secondFullName = Console.ReadLine();
+
+                    Student firstStudent = Array.Find(students, s => s.FullName == firstFullName);
+                    Student secondStudent = Array.Find(students, s => s.FullName == secondFullName);
+
+                    if (firstStudent != null && secondStudent != null)
+                    {
+                        int ageDifference = (firstStudent - secondStudent);
+                        Console.WriteLine($"Разница в возрасте: {ageDifference} лет.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Один из студентов не найден.");
+                    }
+                    break;
+
+                case "3":
+                    Console.Write("Введите ФИО студента для удаления: ");
+                    string removeFullName = Console.ReadLine();
+                    students = Student.RemoveStudentByFullName(students, removeFullName);
+                    count = students.Length;
+                    break;
+
+                case "4":
+                    Console.Write("Введите номер группы для поиска: ");
+                    string searchGroupNumber = Console.ReadLine();
+                    foreach (var student in students)
+                    {
+                        if (student != null && student.GroupNumber == searchGroupNumber)
+                        {
+                            Console.WriteLine(student);
+                        }
+                    }
+                    break;
+
+                case "0":
+                    running = false;
+                    break;
+
+                default:
+                    Console.WriteLine("Некорректный выбор. Попробуйте снова.");
+                    break;
+            }
+        }
+    }
+}
