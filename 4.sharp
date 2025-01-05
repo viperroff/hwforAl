@@ -1,0 +1,26 @@
+using System;
+namespace ConsoleApp1
+{    class Program
+    {   static void Main(string[] args)
+        {            
+            Console.Write("Введите сумму ваших оценок: ");
+            string summ = Console.ReadLine();            
+            Console.Write("Введите количество ваших оценок: ");
+            string div = Console.ReadLine();            
+            try
+            {                
+                int a = Convert.ToInt32(summ);
+                int b = Convert.ToInt32(div);                
+                Console.WriteLine("Средний балл ваших оценок: " + a / b);
+            }            
+            catch (FormatException)
+            {                
+                Console.WriteLine("Ошибка: Введенная строка имеет неверный формат. Пожалуйста, введите целое число.");
+            }            
+            catch (DivideByZeroException)
+            {                
+                Console.WriteLine("Ошибка: Введенное количество оценок равно 0. Деление на ноль невозможно!");
+            }        
+        }
+    }
+}
