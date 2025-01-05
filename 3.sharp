@@ -1,0 +1,36 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        string userInputString;
+        int userInputInt;
+
+        Console.Write("Введите строку: ");
+        userInputString = Console.ReadLine();
+
+        Console.Write("Введите целое число: ");
+        while (!int.TryParse(Console.ReadLine(), out userInputInt))
+        {
+            Console.Write("Некорректный ввод. Пожалуйста, введите целое число: ");
+        }
+
+        Console.Clear();
+
+        Console.BackgroundColor = ConsoleColor.DarkBlue;
+        Console.Clear(); 
+        int originalWidth = Console.WindowWidth;
+        Console.SetWindowSize(originalWidth - (originalWidth / 5), Console.WindowHeight);
+        
+        string currentDate = DateTime.Now.ToLongDateString();
+        Console.SetCursorPosition(Console.WindowWidth - currentDate.Length - 1, 0);
+        Console.WriteLine(currentDate);
+        int centerX = (Console.WindowWidth - userInputString.Length) / 2;
+        int centerY = Console.WindowHeight / 2;
+        Console.SetCursorPosition(centerX, centerY);
+        Console.WriteLine(userInputString);
+        Console.SetCursorPosition(centerX, centerY + 1);
+        Console.WriteLine(userInputInt.ToString("X")); 
+    }
+}
