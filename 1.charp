@@ -1,0 +1,15 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        
+        string path1 = "C:Program" + "\\" + "FilesFar";
+        string path2 = "D:Program" + "\\" + "FilesFar";
+        path2 = path2.Replace("D:", "F:");
+        Console.WriteLine(path1);
+        Console.WriteLine(path2);
+        
+    }
+}
